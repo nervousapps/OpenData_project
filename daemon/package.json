@@ -1,0 +1,11 @@
+{
+  "name": "Data_Project_daemon",
+  "version": "1.0.0",
+  "description": "Data_Project_daemon",
+  "main": "data_daemon.js",
+  "dependencies": {
+    "request": "2.83.0",
+    "mongodb": "2.2.33"
+  },
+  "author": "achille penet"
+}

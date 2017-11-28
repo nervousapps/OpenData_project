@@ -1,0 +1,46 @@
+version: '3'
+services:
+  loadbalancer:
+    image: "jwilder/nginx-proxy"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      - DEFAULT_HOST=data_server
+    networks:
+      - overlay
+
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017"
+    networks:
+      - overlay
+    depends_on:
+      - "loadbalancer"
+
+  data_daemon:
+    build: ./daemon
+    networks:
+      - overlay
+    depends_on:
+      - "mongodb"
+
+  data_server:
+    build: ./server
+    ports:
+      - "8080"
+    expose:
+      - "8080"
+    environment:
+      - VIRTUAL_HOST=data_server
+    networks:
+      - overlay
+    depends_on:
+      - "data_daemon"
+
+networks:
+  overlay:

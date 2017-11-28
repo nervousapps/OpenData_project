@@ -3,8 +3,11 @@ const express = require('express');
 const app = express();
 const MongoClient = require('mongodb').MongoClient
 , assert = require('assert');
+const path = require('path');
 
 var url = 'mongodb://mongodb:27017/bus_data';
+
+app.use('/MovingMarker.js', express.static(path.join(__dirname, '/MovingMarker.js')));
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/index.html");

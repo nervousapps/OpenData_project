@@ -2,7 +2,7 @@
   "name": "Data_Project_server",
   "version": "1.0.0",
   "description": "Data_Project_server",
-  "main": "data_daemon.js",
+  "main": "server.js",
   "dependencies": {
     "express": "4.16.2",
     "mongodb": "2.2.33"

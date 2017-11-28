@@ -79,18 +79,25 @@
 
         coordinate.push(stops.records[0].fields.geo_point_2d);
         coordinate.push(stops.records[1].fields.geo_point_2d);
+        L.marker(stops.records[0].fields.geo_point_2d).addTo(mymap)
+          .bindPopup(stops.records[0].fields.nomarretdepart).openPopup();
+        L.marker(stops.records[1].fields.geo_point_2d).addTo(mymap)
+          .bindPopup(stops.records[1].fields.nomarretdepart).openPopup();
+        //setInterval(startMarker, 5*1000);
         startMarker();
 
         for(var i=2; i<stops.records.length; i++){
-          for(var j=0; j<stops.records[i].fields.parcours.coordinates.length; i++){
+          L.marker(stops.records[i].fields.geo_point_2d).addTo(mymap)
+            .bindPopup(stops.records[i].fields.nomarretdepart).openPopup();
+          myMovingMarker.addLatLng(stops.records[i].fields.geo_point_2d, [1000]);
+          /**for(var j=0; j<stops.records[i].fields.parcours.coordinates.length; i++){
             L.marker([stops.records[i].fields.parcours.coordinates[j][1], stops.records[i].fields.parcours.coordinates[j][0]]).addTo(mymap)
               .bindPopup(stops.records[i].fields.nomarretdepart).openPopup();
-              myMovingMarker.addLatLng([stops.records[i].fields.parcours.coordinates[j][1], stops.records[i].fields.parcours.coordinates[j][0]], [1000]);
-          }
+            myMovingMarker.addLatLng([stops.records[i].fields.parcours.coordinates[j][1], stops.records[i].fields.parcours.coordinates[j][0]], [1000]);
+          }*/
           //myMovingMarker.addLatLng(stops.records[i].fields.parcours.coordinates[i], [1000]);
         }
       }
-
         /**if(coordinate.length == 0){
           coordinate = stops.records[0].fields.coordonnees;
           startMarker();
@@ -101,7 +108,7 @@
           console.log(stops.records[0].fields.coordonnees + ' : ' + coordinate)
         }
       }*/
-      //setInterval(getCoordinate, 10*1000)
+      //setInterval(getCoordinate, 10*1000);
       getCoordinate();
 
     </script>

@@ -11,8 +11,7 @@ services:
       - DEFAULT_HOST=data_server
     networks:
       - overlay
-
-
+      
   mongodb:
     image: mongo
     ports:

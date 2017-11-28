@@ -11,7 +11,7 @@ app.use('/MovingMarker.js', express.static(path.join(__dirname, '/MovingMarker.j
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/index.html");
-})
+});
 
 app.get('/data', function(req, res) {
   MongoClient.connect(url, function(err, db) {

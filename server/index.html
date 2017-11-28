@@ -31,7 +31,7 @@
       var mymap = L.map('map').setView([48.1103, -1.68039], 13);
 
       var xmlhttp = new XMLHttpRequest();
-      var url = "https://data.rennesmetropole.fr/api/records/1.0/search/?dataset=parcours-des-lignes-de-bus-du-reseau-star&facet=nomcourtligne&facet=senscommercial&facet=nomarretdepart&facet=nomarretarrivee&facet=estaccessiblepmr&refine.nomcourtligne=C4";
+      var url = "https://data_server:8080/data";
       var stops;
       var lastcoordinate = [];
       var coordinate = [];
@@ -43,12 +43,6 @@
           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
         id: 'mapbox.streets'
       }).addTo(mymap);
-
-      /**for(var i=0; i<stops.records.length; i++){
-        L.marker([stops.records[i].geometry.coordinates[1], stops.records[i].geometry.coordinates[0]]).addTo(mymap)
-          .bindPopup(stops.records[i].fields.nom).openPopup();
-        linecoordinate.push([stops.records[i].geometry.coordinates[1], stops.records[i].geometry.coordinates[0]]);
-      }*/
 
       var popup = L.popup();
 

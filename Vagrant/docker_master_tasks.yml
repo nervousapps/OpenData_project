@@ -1,0 +1,20 @@
+- name: check swarm is active
+  shell: 'docker info | grep "Swarm: active"'
+  register: swarm_active
+  ignore_errors: true
+
+- name: swarm init
+  when: swarm_active.rc == 1
+  shell: docker swarm init --listen-addr {{ manager_ip }}:2377 --advertise-addr {{ manager_ip }}
+  register: swarm
+
+- debug: var=swarm
+
+- name: get swarm token
+  shell: docker swarm join-token -q worker > /vagrant/worker_token
+
+- name: Docker ps
+  shell: docker ps
+  register: ps
+
+- debug: var=ps

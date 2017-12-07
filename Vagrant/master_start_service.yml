@@ -1,0 +1,35 @@
+# Apply following play to all hosts in our inventory
+- hosts: master
+  # Become root
+  become: true
+
+  tasks:
+    - name: Show swarm nodes
+      shell: docker node ls
+      register: ps
+
+    - debug: var=ps.stdout_lines
+
+    - name: Build service data_daemon
+      shell: cd .. && cd vagrant && cd shared && cd daemon && docker build .<Dockerfile --tag data_daemon
+
+    - name: Build service data_server
+      shell: cd .. && cd vagrant && cd shared && cd server && docker build .<Dockerfile --tag data_server
+
+    - name: Build service autoscaler
+      shell: cd .. && cd vagrant && cd shared && cd autoscale_daemon && docker build .<Dockerfile --tag autoscaler
+
+    - name: Create network for traefik
+      shell: docker network create --driver overlay traefik-net
+
+    - name: Start services on the swarm
+      shell: cd .. && cd .. && cd vagrant && docker stack deploy -c docker-compose.yml cluster
+      register: ps
+
+    - debug: var=ps.stdout_lines
+
+    - name: Show services
+      shell: docker service ls
+      register: ps
+
+    - debug: var=ps.stdout_lines

@@ -1,0 +1,155 @@
+version: '3'
+services:
+  loadbalancer:
+    image: traefik
+    command: --web --docker --docker.swarmmode --docker.domain=docker.localhost --logLevel=WARNING
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-net
+
+  mongodb:
+    image: mongo
+    labels: [orbiter=true]
+    deploy:
+      mode: replicated
+      replicas: 3
+      labels:
+        - orbiter=true
+        - traefik.backend.port=27017
+        - traefik.backend=mongodb
+        - traefik.docker.network=traefik-net
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 50M
+        reservations:
+          cpus: '0.1'
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 5s
+    ports:
+      - "27017:27017"
+    networks:
+      - traefik-net
+      - orbiter-net
+      - default
+    depends_on:
+      - "loadbalancer"
+
+  data_daemon:
+    image: data_daemon
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.backend.port=80
+        - traefik.backend=data_daemon
+    networks:
+      - traefik-net
+      - default
+    depends_on:
+      - "mongodb"
+
+  data_server:
+    image: data_server
+    labels: [orbiter=true]
+    deploy:
+      mode: replicated
+      replicas: 3
+      labels:
+        - orbiter=true
+        - traefik.backend.port=3080
+        - traefik.backend=data_server
+        - traefik.frontend.rule=Host:data.example.com
+        - traefik.docker.network=traefik-net
+      update_config:
+        parallelism: 2
+        delay: 3s
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 50M
+        reservations:
+          cpus: '0.1'
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 5s
+    ports:
+      - "3080:3080"
+    networks:
+      - traefik-net
+      - orbiter-net
+      - default
+    depends_on:
+      - "data_daemon"
+
+  autoscaler:
+    image: autoscaler
+    networks:
+      - traefik-net
+      - orbiter-net
+      - default
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.backend.port=80
+        - traefik.backend=autoscale
+
+
+  orbiter:
+    image: gianarb/orbiter
+    command: daemon --debug
+    ports:
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - traefik-net
+      - orbiter-net
+      - default
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.backend.port=8000
+        - traefik.backend=orbiter
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+
+networks:
+  orbiter-net:
+  traefik-net:
+    external: true

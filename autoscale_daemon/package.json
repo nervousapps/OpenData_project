@@ -1,0 +1,10 @@
+{
+  "name": "Autoscaler",
+  "version": "1.0.0",
+  "description": "Autoscaler",
+  "main": "autoscale.js",
+  "dependencies": {
+    "request": "2.83.0"
+  },
+  "author": "achille penet"
+}

@@ -10,6 +10,7 @@ var url = 'mongodb://mongodb:27017/bus_data';
 app.use('/MovingMarker.js', express.static(path.join(__dirname, '/MovingMarker.js')));
 
 app.get('/', function (req, res) {
+  console.log("Reached by client");
   res.sendFile(__dirname + "/index.html");
 });
 
@@ -22,8 +23,9 @@ app.get('/data', function(req, res) {
       res.send(docs);
     });
   });
+  res.send("Yalla");
 });
 
-app.listen(8080, function(){
-  console.log('listening on :8080');
+app.listen(3080, function(){
+  console.log('listening on :3080');
 });

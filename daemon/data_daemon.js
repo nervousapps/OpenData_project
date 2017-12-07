@@ -3,7 +3,7 @@ const MongoClient = require('mongodb').MongoClient
 , assert = require('assert');
 
 var json
-var request_url = 'https://data.rennesmetropole.fr/api/records/1.0/search/?dataset=parcours-des-lignes-de-bus-du-reseau-star&facet=nomcourtligne&facet=senscommercial&facet=nomarretdepart&facet=nomarretarrivee&facet=estaccessiblepmr&refine.nomcourtligne=C4'
+var request_url = 'https://data.rennesmetropole.fr/api/records/1.0/search/?dataset=position-des-bus-en-circulation-sur-le-reseau-star-en-temps-reel&facet=numerobus&facet=etat&facet=nomcourtligne&facet=sens&facet=destination&refine.nomcourtligne=C4'
 // Connection URL
 var url = 'mongodb://mongodb:27017/bus_data';
 
@@ -14,7 +14,7 @@ MongoClient.connect(url, function(err, db) {
     console.log("Collection created!");
     db.close();
   });
-  console.log("Successfullyconnected to the database !")
+  console.log("Successfully connected to the database !")
 })
 
 // Request the data to the server and save them in the database

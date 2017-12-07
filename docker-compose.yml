@@ -1,17 +1,17 @@
 version: '3'
 services:
   loadbalancer:
-    image: "jwilder/nginx-proxy"
+    image: traefik
+    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
     ports:
       - "80:80"
-      - "443:443"
+      - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-    environment:
-      - DEFAULT_HOST=data_server
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
     networks:
       - overlay
-      
+
   mongodb:
     image: mongo
     ports:
@@ -31,9 +31,9 @@ services:
   data_server:
     build: ./server
     ports:
-      - "8080"
+      - "3000"
     expose:
-      - "8080"
+      - "3000"
     environment:
       - VIRTUAL_HOST=data_server
     networks:

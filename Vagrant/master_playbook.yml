@@ -1,0 +1,33 @@
+# file my_playbook.yml
+
+# Apply following play to all hosts in our inventory
+- hosts: all
+  # Become root
+  become: true
+
+  tasks:
+    - name: Upgrade all packages to the latest version
+      debug: msg="coucou"
+
+    - name: Install Python 2
+      apt:
+        name: "python"
+        state: present
+
+    - name: Update all packages to the latest version
+      apt:
+          upgrade: dist
+
+    # Execute the tasks that will install docker
+    # install_docker.yml only contains tasks, not the above lines
+    - import_tasks: install_docker.yml
+
+    # If you know a bit about systemd, upstart and other Linux service management HELL,
+    # this will make you understand why Ansible is a life-saver
+    - name: Enable Docker service on boot, and ensure it is started
+      service:
+        name: docker
+        state: started # Starts the service if (and only if) it was down
+        enabled: yes # Enables on boot
+
+    - import_tasks: docker_master_tasks.yml

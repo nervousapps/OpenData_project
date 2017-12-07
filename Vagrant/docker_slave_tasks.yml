@@ -1,0 +1,11 @@
+- name: swarm join
+  shell: docker swarm join --token $(cat /vagrant/worker_token) {{ manager_ip }}:2377
+  register: swarm
+
+- debug: var=swarm
+
+- name: Build service data_daemon
+  shell: cd .. && cd vagrant && cd shared && cd daemon && docker build .<Dockerfile --tag data_daemon
+
+- name: Build service data_server
+  shell: cd .. && cd vagrant && cd shared && cd server && docker build .<Dockerfile --tag data_server

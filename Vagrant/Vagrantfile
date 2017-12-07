@@ -1,0 +1,82 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+manager_ip = "10.0.3.2"
+
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Common settings that all VMs share
+  config.vm.synced_folder "/Users/achillepenet/Desktop/ESIR3/CLOUD/OpenData_project/", "/home/vagrant/shared"
+  config.vm.box = "ubuntu/xenial64"
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.define "master" do |master|
+    master.vm.hostname = "master"
+    master.vm.network "private_network", ip: manager_ip
+
+    master.vm.provision "ansible" do |ansible|
+      # Verbose output
+      ansible.verbose = "v" # or "vv" or "vvv" for even more verbose
+      ansible.playbook = "master_playbook.yml"
+      ansible.extra_vars = {
+        project_dir: "OpenData_project",
+        manager_ip: manager_ip,
+        # This will save you an error
+        ansible_python_interpreter: "/usr/bin/python3"
+      }
+    end
+  end
+
+  config.vm.define "slave1" do |slave1|
+    slave1.vm.hostname = "slave1"
+    slave1.vm.network "private_network", ip: "10.0.3.3"
+
+    slave1.vm.provision "ansible" do |ansible|
+      # Verbose output
+      ansible.verbose = "v" # or "vv" or "vvv" for even more verbose
+      ansible.playbook = "slave_playbook.yml"
+      ansible.extra_vars = {
+        project_dir: "OpenData_project",
+        manager_ip: manager_ip,
+        # This will save you an error
+        ansible_python_interpreter: "/usr/bin/python3"
+      }
+    end
+  end
+
+  config.vm.define "slave2" do |slave2|
+    #slave2.vm.hostname = "slave2"
+    #slave2.vm.network "private_network", ip: "10.0.3.4"
+    #slave2.vm.provision "ansible" do |ansible|
+      #Verbose output
+    #  ansible.verbose = "v" # or "vv" or "vvv" for even more verbose
+    #  ansible.playbook = "slave_playbook.yml"
+    #  ansible.extra_vars = {
+    #    project_dir: "OpenData_project",
+    #    manager_ip: manager_ip,
+        #This will save you an error
+    #    ansible_python_interpreter: "/usr/bin/python3"
+    #  }
+    #end
+
+    slave2.vm.provision "apps", type: "ansible" do |ansible|
+      # Verbose output
+      ansible.limit = "master"
+      ansible.verbose = "v" # or "vv" or "vvv" for even more verbose
+      ansible.playbook = "master_start_service.yml"
+      ansible.extra_vars = {
+        project_dir: "OpenData_project",
+        # This will save you an error
+        ansible_python_interpreter: "/usr/bin/python3"
+      }
+    end
+  end
+end

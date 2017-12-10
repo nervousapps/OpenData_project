@@ -15,14 +15,17 @@ app.get('/', function (req, res) {
 });
 
 app.get('/data', function(req, res) {
-  MongoClient.connect(url, function(err, db) {
-    db.collection("busline").find(function(err, docs) {
-      assert.equal(err, null);
-      console.log("Found the following records");
-      console.log(docs.records[0].fields.coordonnees);
-      res.send(docs);
+  var getData = function(){
+    MongoClient.connect(url, function(err, db) {
+      db.collection("coordinates").find(function(err, docs) {
+        assert.equal(err, null);
+        console.log("Found the following records");
+        console.log(docs.records[0].fields.coordonnees);
+        res.send(docs.records[0].fields.coordonnees);
+      });
     });
-  });
+  }
+  setInterval(getData, 30*1000)
   res.send("Yalla");
 });
 

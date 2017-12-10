@@ -31,9 +31,9 @@ services:
   data_server:
     build: ./server
     ports:
-      - "3000"
+      - "3080:3080"
     expose:
-      - "3000"
+      - "3080"
     environment:
       - VIRTUAL_HOST=data_server
     networks:
